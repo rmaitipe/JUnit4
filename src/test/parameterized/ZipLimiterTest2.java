@@ -1,4 +1,4 @@
-package test;
+package test.parameterized;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,25 +15,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
 
 import com.ZipCodePair;
 import com.ZipLimiter;
-
 
 /*
  * This class is to Unit test the ZipLimiter class. 
  */
 @RunWith(Parameterized.class)
-public class ZipLimiterTest3 {
+public class ZipLimiterTest2 {
 
-
-	private static Log log = LogFactory.getLog(ZipLimiterTest3.class);
-	
-	@Parameter(value = 0)
-	public String inputFile;
-	@Parameter(value = 1)
-	public String outputFile;
+	private static Log log = LogFactory.getLog(ZipLimiterTest2.class);
+	private String inputFile;
+	private String outputFile;
 	
     @Parameterized.Parameters
     public static List<Object[]> fileNames() {
@@ -44,7 +38,13 @@ public class ZipLimiterTest3 {
          { "resources/test/zipInputBadDataPairs.txt", "resources/test/expectedv2/expectedZipInputBadDataPairs.txt"}
       });
     }
-
+    
+	// Constructor is initialized with one set of parameters every time
+	public ZipLimiterTest2(String input, String output) 
+	{
+		this.inputFile = input;
+		this.outputFile = output;
+	}
 	/*
 	* These are the values to be compared against the data read from files in test case scenarios.
 	* Called automatically before the Test class is run.
@@ -98,7 +98,7 @@ public class ZipLimiterTest3 {
                   }
              }
          } catch (IOException e) {
-             e.printStackTrace();
+			log.error(e);
          }
  	    return zipOutputMatchList;
  	} 	

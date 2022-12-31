@@ -1,10 +1,9 @@
-package test;
+package test.parameterized;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -13,41 +12,21 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import com.ZipCodePair;
 import com.ZipLimiter;
 
-
 /*
  * This class is to Unit test the ZipLimiter class. 
  */
-@RunWith(Parameterized.class)
-public class ZipLimiterTest2 {
+public class ZipLimiterTest {
 
-
-	private static Log log = LogFactory.getLog(ZipLimiterTest2.class);
-	private String inputFile;
-	private String outputFile;
+	List<ZipCodePair> expectedtest1;
+	List<ZipCodePair> expectedtest2;
+	List<ZipCodePair> expectedtest3;
+	List<ZipCodePair> expectedtest4;
+	private static Log log = LogFactory.getLog(ZipLimiterTest.class);
 	
-    @Parameterized.Parameters
-    public static List<Object[]> fileNames() {
-      return Arrays.asList(new Object[][] {
-         { "resources/test/zipInputNoConflictPairs.txt", "resources/test/expectedv2/expectedZipInputNoConflictPairs.txt" },
-         { "resources/test/zipInputMergeSortedPairs.txt", "resources/test/expectedv2/expectedZipInputMergeSortedPairs.txt"},
-         { "resources/test/zipInputMergeUnsortedPairs.txt", "resources/test/expectedv2/expectedZipInputMergeUnsortedPairs.txt" },
-         { "resources/test/zipInputBadDataPairs.txt", "resources/test/expectedv2/expectedZipInputBadDataPairs.txt"}
-      });
-    }
-
-    
-	// Constructor is initialized with one set of parameters every time
-	public ZipLimiterTest2(String input, String output) 
-	{
-		this.inputFile = input;
-		this.outputFile = output;
-	}
 	/*
 	* These are the values to be compared against the data read from files in test case scenarios.
 	* Called automatically before the Test class is run.
@@ -55,6 +34,10 @@ public class ZipLimiterTest2 {
  	@Before
     public void setUp() {
  		log.info("@Before - setUp");
+    	expectedtest1 = read("resources/test/expectedv2/expectedZipInputNoConflictPairs.txt");
+		expectedtest2 = read("resources/test/expectedv2/expectedZipInputMergeSortedPairs.txt");
+		expectedtest3 = read("resources/test/expectedv2/expectedZipInputMergeUnsortedPairs.txt");
+		expectedtest4 = read("resources/test/expectedv2/expectedZipInputBadDataPairs.txt");
     }
     
     @After
@@ -70,9 +53,18 @@ public class ZipLimiterTest2 {
     @Test
 	public void zipLimiterDataTest() {
 		ZipLimiter zip = new ZipLimiter();
-		List<ZipCodePair> testDataSet = zip.test(inputFile);
-		List<ZipCodePair> outputDataSet = read(outputFile);
-		Assert.assertEquals(outputDataSet, testDataSet);
+		
+		List<ZipCodePair> test1 = zip.test("resources/test/zipInputNoConflictPairs.txt");
+		Assert.assertEquals(expectedtest1, test1);
+		
+		List<ZipCodePair> test2 = zip.test("resources/test/zipInputMergeSortedPairs.txt");
+		Assert.assertEquals(expectedtest2, test2);
+		
+		List<ZipCodePair> test3 = zip.test("resources/test/zipInputMergeUnsortedPairs.txt");
+		Assert.assertEquals(expectedtest3, test3);
+		
+		List<ZipCodePair> test4 = zip.test("resources/test/zipInputBadDataPairs.txt");
+		Assert.assertEquals(expectedtest4, test4);		
 	}
     
     /*
@@ -83,7 +75,7 @@ public class ZipLimiterTest2 {
      */
  	public List<ZipCodePair> read(String fileInput){
  		int lineNumber=0;
- 		List<ZipCodePair> zipOutputMatchList = new ArrayList<>();
+ 		List<ZipCodePair> zipOutputMatchList = new ArrayList<ZipCodePair>();
          	//try with resources
          	try (BufferedReader br = new BufferedReader(new FileReader(fileInput))){
              String line = null;
@@ -101,7 +93,7 @@ public class ZipLimiterTest2 {
                   }
              }
          } catch (IOException e) {
-             e.printStackTrace();
+			log.error(e);
          }
  	    return zipOutputMatchList;
  	} 	
